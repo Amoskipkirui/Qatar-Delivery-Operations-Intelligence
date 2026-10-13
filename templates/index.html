@@ -1,0 +1,217 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qatar Delivery Operations Intelligence</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="topbar">
+    <a class="brand" href="/">
+        <span class="brand-icon">Q</span>
+        <span>Qatar<span class="brand-light">Delivery Intelligence</span></span>
+    </a>
+    <span class="status"><span class="dot"></span> MODEL ONLINE</span>
+</header>
+
+<main class="container">
+
+    <section class="hero">
+        <div>
+            <p class="eyebrow">OPERATIONS OVERVIEW</p>
+            <h1>Delivery Operations</h1>
+            <p class="subtitle">Monitor performance. Identify risk. Make better decisions.</p>
+        </div>
+        <div class="hero-tag">QATAR <span>·</span> ANALYTICS</div>
+    </section>
+
+    <section class="metrics">
+        <article class="metric-card">
+            <span class="metric-label">Total Orders</span>
+            <strong>{{ metrics.total_orders }}</strong>
+            <span class="metric-note">Orders in dataset</span>
+        </article>
+        <article class="metric-card">
+            <span class="metric-label">Delivered Orders</span>
+            <strong>{{ metrics.delivered_orders }}</strong>
+            <span class="metric-note">Successfully delivered</span>
+        </article>
+        <article class="metric-card">
+            <span class="metric-label">Late Deliveries</span>
+            <strong>{{ metrics.late_deliveries }}</strong>
+            <span class="metric-note">Based on delivery times</span>
+        </article>
+        <article class="metric-card">
+            <span class="metric-label">On-Time Rate</span>
+            <strong>{{ metrics.on_time_rate }}</strong>
+            <span class="metric-note">Of delivered orders</span>
+        </article>
+        <article class="metric-card">
+            <span class="metric-label">Average Delivery Time</span>
+            <strong>{{ metrics.avg_delivery_time }}</strong>
+            <span class="metric-note">Delivered orders only</span>
+        </article>
+        <article class="metric-card">
+            <span class="metric-label">Cancelled Orders</span>
+            <strong>{{ metrics.cancelled_orders }}</strong>
+            <span class="metric-note">Orders not delivered</span>
+        </article>
+    </section>
+
+    <section class="workspace">
+
+        <article class="panel form-panel">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">PREDICTIVE ANALYTICS</p>
+                    <h2>Delivery Risk Assessment</h2>
+                    <p class="panel-description">
+                        Enter order conditions to estimate late-delivery risk.
+                    </p>
+                </div>
+                <span class="panel-icon">↗</span>
+            </div>
+
+            {% if error %}
+            <div class="alert">{{ error }}</div>
+            {% endif %}
+
+            <form action="{{ url_for('predict_form') }}" method="POST">
+                <div class="form-grid">
+
+                    <label>Delivery zone
+                        <select name="delivery_zone" required>
+                            {% for value in choices.delivery_zone %}
+                            <option value="{{ value }}" {% if form_data.get('delivery_zone') == value %}selected{% endif %}>{{ value }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+
+                    <label>Order type
+                        <select name="order_type" required>
+                            {% for value in choices.order_type %}
+                            <option value="{{ value }}" {% if form_data.get('order_type') == value %}selected{% endif %}>{{ value }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+
+                    <label>Traffic level
+                        <select name="traffic_level" required>
+                            {% for value in choices.traffic_level %}
+                            <option value="{{ value }}" {% if form_data.get('traffic_level') == value %}selected{% endif %}>{{ value }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+
+                    <label>Weather condition
+                        <select name="weather_condition" required>
+                            {% for value in choices.weather_condition %}
+                            <option value="{{ value }}" {% if form_data.get('weather_condition') == value %}selected{% endif %}>{{ value }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+
+                    <label>Distance (km)
+                        <input type="number" name="distance_km" min="0" step="0.1" value="{{ form_data.get('distance_km', '5') }}" required>
+                    </label>
+
+                    <label>Preparation time (min)
+                        <input type="number" name="prep_time_min" min="0" step="1" value="{{ form_data.get('prep_time_min', '15') }}" required>
+                    </label>
+
+                    <label>Courier experience (months)
+                        <input type="number" name="courier_experience_months" min="0" step="1" value="{{ form_data.get('courier_experience_months', '12') }}" required>
+                    </label>
+
+                    <label>Promised delivery (min)
+                        <input type="number" name="promised_delivery_min" min="1" step="1" value="{{ form_data.get('promised_delivery_min', '40') }}" required>
+                    </label>
+
+                    <label>Order hour (0–23)
+                        <input type="number" name="order_hour" min="0" max="23" value="{{ form_data.get('order_hour', '19') }}" required>
+                    </label>
+
+                    <label>Day of week (Mon=0, Sun=6)
+                        <input type="number" name="order_day_of_week" min="0" max="6" value="{{ form_data.get('order_day_of_week', '2') }}" required>
+                    </label>
+
+                    <label>Month (1–12)
+                        <input type="number" name="order_month" min="1" max="12" value="{{ form_data.get('order_month', '10') }}" required>
+                    </label>
+
+                </div>
+
+                <button class="primary-button" type="submit">
+                    Assess Delivery Risk <span>→</span>
+                </button>
+            </form>
+        </article>
+
+        <aside class="panel result-panel">
+            <p class="eyebrow">MODEL OUTPUT</p>
+            <h2>Prediction Summary</h2>
+
+            {% if result %}
+            <div class="prediction-state {{ result.risk|lower }}">
+                <span class="state-label">{{ result.risk }} RISK</span>
+                <h3>{{ result.prediction }}</h3>
+                <p>Estimated late-delivery probability</p>
+                <div class="probability">{{ result.late_probability_pct }}</div>
+
+                <progress class="probability-bar"
+                          value="{{ result.late_probability_number }}"
+                          max="100">
+                    {{ result.late_probability_pct }}
+                </progress>
+            </div>
+
+            <div class="recommendation">
+                <strong>Suggested operational action</strong>
+                <p>{{ result.recommendation }}</p>
+            </div>
+
+            <p class="small-note">
+                This is a model estimate, not a guaranteed outcome.
+            </p>
+
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">⌁</div>
+                <h3>Ready to assess</h3>
+                <p>
+                    Complete the delivery details and run an assessment to view
+                    the predicted outcome and risk level.
+                </p>
+            </div>
+
+            <div class="recommendation muted">
+                <strong>Decision support</strong>
+                <p>
+                    Use the estimate alongside live operational information
+                    and dispatcher judgement.
+                </p>
+            </div>
+            {% endif %}
+        </aside>
+
+    </section>
+
+    <section class="bottom-note">
+        <span>INSIGHT-LED OPERATIONS</span>
+        <p>
+            Use delivery performance data to identify delays and support
+            better operational decisions.
+        </p>
+    </section>
+
+    <footer>
+        <span>Qatar Delivery Operations Intelligence</span>
+        <span>Portfolio prototype · Synthetic dataset</span>
+    </footer>
+
+</main>
+</body>
+</html>
