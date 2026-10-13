@@ -1,182 +1,149 @@
+
 # Qatar Delivery Operations Intelligence
 
-A delivery analytics and machine learning project built to explore delivery performance, identify operational delays, and estimate late-delivery risk.
+An end-to-end analytics project that combines **Power BI, Python, SQL-ready data workflows, Flask, and machine learning** to monitor delivery performance and estimate late-delivery risk.
 
-## Overview
+> **Project note:** This portfolio project uses synthetic delivery data. It is not affiliated with, or based on confidential data from, Snoonu or Talabat.
 
-Timely delivery is an important part of customer experience in the food and e-commerce delivery industry. Delays can arise from traffic conditions, preparation time, delivery distance, weather, and courier experience.
+## Live Demo
 
-This project brings these factors together in a single application. It combines operational KPIs with a machine learning model that estimates the likelihood of a delivery arriving later than its promised delivery time.
+- **Flask Application:** https://qatar-delivery-operations-intelligence.onrender.com/
+- **GitHub Repository:** https://github.com/Amoskipkirui/Qatar-Delivery-Operations-Intelligence
 
-The project was developed as a portfolio demonstration using a synthetic dataset designed around delivery operations in Qatar.
+## Business Problem
 
-## Features
+Delivery businesses need to monitor order volumes, cancellations, delivery delays, and service reliability. This project demonstrates how operational data can be transformed into management dashboards and predictive insights to support better delivery decisions.
 
-- **Operations dashboard:** Summarises total orders, completed deliveries, cancellations, late deliveries, on-time delivery rate, and average delivery time.
-- **Late-delivery prediction:** Estimates delivery risk using order and operating conditions.
-- **Risk assessment:** Classifies predictions into low, moderate, and high risk categories.
-- **Operational guidance:** Provides suggested actions based on the predicted outcome.
-- **Flask API:** Exposes prediction functionality through an HTTP endpoint.
-- **Power BI reporting:** Supports further exploration of delivery performance and operational trends.
+## Power BI Dashboard
+
+The Power BI dashboard provides an overview of delivery operations through key performance indicators and visual analysis.
+
+### Key Performance Indicators
+
+- Total orders
+- Delivered orders
+- Cancelled orders
+- Late deliveries
+- On-time delivery rate
+- Average delivery time
+
+### Dashboard Screenshots
+
+Add your dashboard screenshots to the `screenshots/` folder. Replace the example filenames below with the exact names of your saved images.
+
+![Delivery Operations Dashboard](screenshots/delivery_dashboard.png)
+
+*Power BI dashboard showing delivery performance KPIs and operational trends.*
+
+## Machine Learning and Flask Application
+
+The project includes a machine-learning model that estimates the likelihood of an order being delivered late.
+
+The Flask application provides:
+- An interface for entering delivery and operational details.
+- A late-delivery prediction and risk category.
+- A prediction API for programmatic access.
+- Dashboard KPIs calculated from the cleaned dataset.
+
+### Model Inputs
+
+The model uses features such as:
+- Delivery zone and order type
+- Delivery distance
+- Traffic and weather conditions
+- Preparation time
+- Courier experience
+- Promised delivery time
+- Order hour, day of week, and month
+
+The model is a decision-support prototype, not a guarantee of actual delivery outcomes.
 
 ## Technology Stack
 
 | Area | Tools |
 |---|---|
-| Data processing | Python, Pandas, NumPy |
-| Machine learning | Scikit-learn, Random Forest |
-| Web application | Flask, HTML, CSS |
-| Model persistence | Joblib |
-| Business intelligence | Power BI |
+| Business intelligence | Power BI, DAX |
+| Data preparation | Python, Pandas, NumPy |
+| Machine learning | Scikit-learn |
+| Application | Flask, HTML, CSS |
+| Version control | Git, GitHub |
 | Deployment | Render |
-| Version control | Git and GitHub |
 
 ## Dataset
 
-The project uses a synthetic dataset containing 5,020 delivery records and 14 columns.
+The project uses a synthetic dataset of 5,020 delivery-order records. The data includes order timing, delivery zone, distance, traffic, weather, preparation time, courier experience, promised and actual delivery times, and order status.
 
-The data includes order dates and times, delivery zones, order types, distance, traffic, weather, preparation time, courier experience, promised delivery time, actual delivery time, order status, and the original late-delivery label.
-
-Data preparation includes standardising categorical values, converting data types, removing exact duplicate rows, identifying missing values, and reviewing repeated order IDs.
-
-For model training, the target is defined from the delivery times:
-
-- **Late:** Actual delivery time exceeds promised delivery time.
-- **On time:** Actual delivery time is less than or equal to promised delivery time.
-
-Cancelled orders are excluded from model training because their delivery outcome cannot be evaluated in the same way.
-
-## Machine Learning Approach
-
-A Random Forest classifier is trained using delivery conditions and order timing features. Missing numerical and categorical values are handled through a preprocessing pipeline, and categorical variables are encoded before model training.
-
-The model is evaluated using a held-out test set, with particular attention to precision, recall, F1-score, confusion matrix, and ROC-AUC.
-
-The initial model achieved a ROC-AUC of **0.784** on the test set. Its recall for late deliveries was approximately **0.58**, while precision was approximately **0.31**. These results provide a baseline for further model improvement, especially in reducing false alarms while detecting delayed orders.
-
-The model is intended for demonstration and experimentation, not production dispatch decisions.
-
-## Application
-
-The Flask application provides an operations overview and a form for assessing an individual delivery.
-
-Users can enter the delivery zone, order type, distance, traffic and weather conditions, preparation time, courier experience, promised delivery time, and order timing details.
-
-The application returns the predicted outcome, estimated late-delivery probability, risk category, and suggested operational guidance.
-
-### API Endpoints
-
-| Endpoint | Method | Purpose |
-|---|---|---|
-| `/` | GET | Opens the operations dashboard |
-| `/health` | GET | Checks whether the application is running |
-| `/predict` | POST | Submits the delivery assessment form |
-| `/api/predict` | POST | Accepts JSON input and returns a prediction |
-
-## Running Locally
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/YOUR_USERNAME/qatar-delivery-operations-intelligence.git
-cd qatar-delivery-operations-intelligence
-```
-
-### 2. Create and activate a virtual environment
-
-On Windows:
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
-
-### 3. Install dependencies
-
-```bash
-python -m pip install -r requirements.txt
-```
-
-### 4. Prepare the data and model
-
-If the cleaned dataset is not available, run:
-
-```bash
-python clean_delivery_data.py
-```
-
-If the saved model is not available, run:
-
-```bash
-python train_model.py
-```
-
-### 5. Start the application
-
-```bash
-python app.py
-```
-
-Open `http://127.0.0.1:5000` in your browser.
-
-## Deployment
-
-The application can be deployed to Render using the connected GitHub repository.
-
-**Build command**
-
-```bash
-pip install -r requirements.txt
-```
-
-**Start command**
-
-```bash
-gunicorn app:app
-```
-
-The trained model and required data files must be included in the deployed application or made available through a configured storage location.
+The dataset supports demonstration and learning; results should not be interpreted as real-world Snoonu or Talabat performance.
 
 ## Project Structure
 
 ```text
-Qatar_Delivery_Operations_Intelligence/
+Qatar-Delivery-Operations-Intelligence/
+├── data/
+├── models/
+├── notebooks/
+├── powerbi/
+│   └── Delivery_Operations_Dashboard.pbix
+├── screenshots/
+├── static/
+├── templates/
 ├── app.py
 ├── clean_delivery_data.py
 ├── train_model.py
 ├── requirements.txt
-├── README.md
-├── data/
-│   ├── qatar_delivery_orders_raw.csv
-│   └── qatar_delivery_orders_clean.csv
-├── models/
-│   └── late_delivery_model.joblib
-├── notebooks/
-│   └── delivery.ipynb
-├── templates/
-│   └── index.html
-└── static/
-    └── style.css
+└── README.md
 ```
+
+## Run Locally
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/Amoskipkirui/Qatar-Delivery-Operations-Intelligence.git
+   cd Qatar-Delivery-Operations-Intelligence
+   ```
+
+2. Create and activate a virtual environment.
+
+3. Install dependencies:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Ensure the cleaned dataset and trained model are available in `data/` and `models/`.
+
+5. Start the application:
+
+   ```bash
+   python app.py
+   ```
+
+6. Open `http://127.0.0.1:5000` in your browser.
+
+## Business Value
+
+This project demonstrates how a delivery operations team could:
+- Monitor service performance using clear KPIs.
+- Identify patterns associated with late deliveries.
+- Flag potentially high-risk orders for operational review.
+- Combine descriptive analytics with predictive decision support.
+
+The project illustrates a possible workflow; actual financial or operational improvements would need to be validated using real business data.
 
 ## Limitations and Future Improvements
 
-The dataset is synthetic and does not represent actual operational data from a delivery company. Model performance on this dataset may not generalise to real delivery environments.
+- Replace synthetic data with authorised operational data.
+- Automate ingestion and refresh of new delivery records.
+- Connect a persistent data source to the deployed application.
+- Publish the Power BI report with appropriate access controls.
+- Monitor model performance and retrain when sufficient new labelled data becomes available.
 
-Potential improvements include:
+## Author
 
-- Testing on real, authorised delivery data.
-- Improving late-delivery precision and recall.
-- Analysing delay patterns by delivery zone, hour, traffic, and weather.
-- Integrating Power BI reporting with a reliable data refresh process.
-- Adding automated model monitoring and prediction logging.
+**Amos Kipkirui**  
+Data Analyst | Business Intelligence | Machine Learning
 
-## Project Links
-
-- **GitHub repository:** [Add repository URL]
-- **Live application:** [Add Render URL]
-- **Power BI dashboard:** [Add dashboard link or screenshot]
-
----
-
-**Note:** This is an independent portfolio project using synthetic data. It is not affiliated with, endorsed by, or connected to Snoonu, Talabat, or any other delivery company.
+- [GitHub Portfolio](https://github.com/Amoskipkirui)
+- [LinkedIn](https://www.linkedin.com/in/emoh-kipkirui-a7167a263/)
+- [Live Flask Demo](https://qatar-delivery-operations-intelligence.onrender.com/)
